@@ -12,8 +12,8 @@ The dataset (`data/customer_churn.csv`) contains 1,000 customers with the follow
 | MonthlyCharges | float | Monthly service cost (USD) |
 | InternetUsageGB | float | Monthly internet usage (GB) |
 | SupportCalls | int | Number of support calls |
-| ContractType | categorical | Month-to-month, One year, Two year |
-| PaymentMethod | categorical | Bank transfer, Credit card, Electronic check, Mailed check |
+| ContractType | categorical | `Month-to-month`, `One year`, `Two year` |
+| PaymentMethod | categorical | `Bank transfer`, `Credit card`, `Electronic check`, `Mailed check` |
 | Churn | int | Target (0 = No Churn, 1 = Churn) |
 
 **Note:** The dataset is highly imbalanced (~1.8% churners).
