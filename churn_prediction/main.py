@@ -45,21 +45,21 @@ def main() -> None:
     cv_results = cross_validate_models(models, X, y)
 
     # ── Step 5: Select best model by F1 then Recall ───────────────────────
-    best_name = max(
+    best_model_name = max(
         cv_results,
         key=lambda n: (cv_results[n]["f1"], cv_results[n]["recall"]),
     )
-    logger.info("Best model: %s", best_name)
+    logger.info("Best model: %s", best_model_name)
 
     # ── Step 6: Retrain best pipeline on ALL data (Golden Model) ──────────
     # Re-initialise a fresh pipeline so CV fold state is discarded
-    if best_name == "Random Forest":
+    if best_model_name == "Random Forest":
         golden_pipeline = create_rf_pipeline()
     else:
         golden_pipeline = create_xgb_pipeline(y)
 
-    train_model(golden_pipeline, X, y, f"{best_name} (Golden Model)")
-    plot_feature_importance(golden_pipeline, f"{best_name} (Golden Model)")
+    train_model(golden_pipeline, X, y, f"Golden Model ({best_model_name})")
+    plot_feature_importance(golden_pipeline, f"Golden Model ({best_model_name})")
 
     # ── Step 7: Save golden model ─────────────────────────────────────────
     model_path = Path(MODEL_DIR)
@@ -87,7 +87,7 @@ def main() -> None:
 
     pred_class, prob = predict_churn(test_customer, golden_pipeline)
     label = "Churn" if pred_class == 1 else "No Churn"
-    logger.info("  %s: %s  (class=%s, churn_prob=%.4f)", best_name, label, pred_class, prob)
+    logger.info("  %s: %s  (class=%s, churn_prob=%.4f)", best_model_name, label, pred_class, prob)
 
 
 if __name__ == "__main__":
