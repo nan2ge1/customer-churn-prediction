@@ -43,6 +43,7 @@ models/*.pkl
 # Claude
 .claudeignore
 CLAUDE.md
+TASKS.md
 
 # Azure
 .azure/

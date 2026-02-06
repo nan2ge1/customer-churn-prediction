@@ -14,7 +14,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
-from churn_prediction.config import MODEL_DIR
+from churn_prediction.config import MODEL_DIR, MODEL_FILENAME
 
 # ── App ────────────────────────────────────────────────────────────────────
 
@@ -65,7 +65,7 @@ class CustomerData(BaseModel):
 
 # ── Model loading ────────────────────────────────────────────────────────
 
-MODEL_PATH = Path(MODEL_DIR) / "xgb_pipeline.joblib"
+MODEL_PATH = Path(MODEL_DIR) / MODEL_FILENAME
 model = None
 
 try:

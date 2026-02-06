@@ -8,14 +8,29 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import (
+    classification_report,
+    confusion_matrix,
+    make_scorer,
+    f1_score,
+    precision_score,
+    recall_score,
+)
+from sklearn.model_selection import RepeatedStratifiedKFold, cross_validate
 from sklearn.pipeline import Pipeline
 
 from matplotlib.colors import TwoSlopeNorm
 
 logger = logging.getLogger(__name__)
 
-from churn_prediction.config import CATEGORICAL_FEATURES, NUMERICAL_FEATURES, TARGET
+from churn_prediction.config import (
+    CATEGORICAL_FEATURES,
+    CV_N_REPEATS,
+    CV_N_SPLITS,
+    NUMERICAL_FEATURES,
+    RANDOM_STATE,
+    TARGET,
+)
 
 
 # ---- Correlation Matrix -------------------------------------------------- #
@@ -112,3 +127,61 @@ def plot_feature_importance(pipeline: Pipeline, name: str) -> None:
     ax.set_title(f"Feature Importance – {name}")
     plt.tight_layout()
     plt.show()
+
+
+# ---- Cross-Validation --------------------------------------------------- #
+
+def cross_validate_models(
+    models: dict[str, Pipeline],
+    X: pd.DataFrame,
+    y: pd.Series,
+) -> dict[str, dict[str, float]]:
+    """Run Repeated Stratified K-Fold CV and log mean +/- std for each metric.
+
+    Parameters
+    ----------
+    models : dict
+        Mapping of model name to (unfitted) sklearn Pipeline.
+    X, y : DataFrame / Series
+        Full feature matrix and target vector (no train/test split).
+
+    Returns
+    -------
+    results : dict
+        ``{model_name: {"f1": mean, "recall": mean, ...}}`` for downstream
+        model selection.
+    """
+    cv = RepeatedStratifiedKFold(n_splits=CV_N_SPLITS, n_repeats=CV_N_REPEATS, random_state=RANDOM_STATE)
+
+    scoring = {
+        "recall": make_scorer(recall_score, zero_division=0),
+        "precision": make_scorer(precision_score, zero_division=0),
+        "f1": make_scorer(f1_score, zero_division=0),
+        "pr_auc": "average_precision",
+        "roc_auc": "roc_auc",
+    }
+
+    results: dict[str, dict[str, float]] = {}
+
+    for name, pipeline in models.items():
+        logger.info("Cross-validating %s (5 folds × 10 repeats) …", name)
+        cv_results = cross_validate(
+            pipeline, X, y, cv=cv, scoring=scoring, n_jobs=-1,
+        )
+
+        logger.info("=" * 60)
+        logger.info("  %s – Cross-Validation Results", name)
+        logger.info("=" * 60)
+
+        means: dict[str, float] = {}
+        for metric in scoring:
+            key = f"test_{metric}"
+            mean = cv_results[key].mean()
+            std = cv_results[key].std()
+            means[metric] = mean
+            label = metric.replace("_", " ").title()
+            logger.info("  %s: %.4f (+/- %.4f)", label, mean, std)
+
+        results[name] = means
+
+    return results

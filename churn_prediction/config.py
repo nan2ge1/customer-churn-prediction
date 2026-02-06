@@ -26,5 +26,10 @@ RANDOM_STATE = 42
 # Model hyper-parameters
 N_ESTIMATORS = 1000
 
+# Cross-validation settings
+CV_N_SPLITS = 5
+CV_N_REPEATS = 10
+
 # Model output
 MODEL_DIR = "models"
+MODEL_FILENAME = "churn_model.joblib"

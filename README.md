@@ -37,10 +37,11 @@ python -m churn_prediction.main
 This will:
 1. Load and explore the data
 2. Plot feature correlation matrix
-3. Train Random Forest and XGBoost models (with class imbalance handling)
-4. Evaluate on test dataset
-5. Save the XGBoost model to `models/xgb_pipeline.joblib`
-6. Run a sample prediction
+3. Run Repeated Stratified K-Fold Cross-Validation (5 folds × 10 repeats) on Random Forest and XGBoost models, reporting mean and std for Recall, Precision, F1, PR-AUC, and ROC-AUC
+4. Select the best model by F1-Score and Recall
+5. Retrain the best model on the full dataset (Golden Model)
+6. Save the golden model to `models/churn_model.joblib`
+7. Run a sample prediction
 
 ## API Service
 
@@ -76,7 +77,7 @@ curl -X POST http://127.0.0.1:8000/predict \
 ```json
 {
   "prediction": 1,
-  "churn_probability": 0.9949,
+  "churn_probability": 0.9991,
   "risk_level": "High"
 }
 ```
