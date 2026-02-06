@@ -180,7 +180,7 @@ def cross_validate_models(
             std = cv_results[key].std()
             means[metric] = mean
             label = metric.replace("_", " ").title()
-            logger.info("  %s: %.4f (+/- %.4f)", label, mean, std)
+            logger.info("  %s: %.4f (± %.4f)", label, mean, std)
 
         results[name] = means
 
