@@ -19,8 +19,6 @@ from sklearn.metrics import (
 from sklearn.model_selection import RepeatedStratifiedKFold, cross_validate
 from sklearn.pipeline import Pipeline
 
-from matplotlib.colors import TwoSlopeNorm
-
 logger = logging.getLogger(__name__)
 
 from churn_prediction.config import (
@@ -29,42 +27,7 @@ from churn_prediction.config import (
     CV_N_SPLITS,
     NUMERICAL_FEATURES,
     RANDOM_STATE,
-    TARGET,
 )
-
-
-# ---- Correlation Matrix -------------------------------------------------- #
-
-def plot_correlation_matrix(df: pd.DataFrame) -> None:
-    """Heatmap of Pearson correlations across all columns (including Churn).
-
-    Categorical columns are one-hot encoded before computing correlations.
-    The colormap is centred on zero and scaled so that the strongest
-    correlation with Churn sits at the colour-range boundary, making
-    Churn-correlated features visually prominent.
-    """
-    # One-hot encode categoricals, keep numerics as-is
-    df_encoded = pd.get_dummies(df, columns=CATEGORICAL_FEATURES)
-    corr = df_encoded.corr()
-
-    # Scale the colour map around the Churn column's correlation range
-    churn_corr = corr[TARGET].drop(TARGET)
-    vmax = churn_corr.abs().max()
-    norm = TwoSlopeNorm(vmin=-vmax, vcenter=0, vmax=vmax)
-
-    fig, ax = plt.subplots(figsize=(10, 8))
-    sns.heatmap(
-        corr,
-        annot=True,
-        fmt=".2f",
-        cmap="coolwarm",
-        norm=norm,
-        ax=ax,
-    )
-    ax.set_title("Feature Correlation Matrix")
-    plt.xticks(rotation=45, ha="right")
-    plt.tight_layout()
-    plt.show()
 
 
 # ---- Training ------------------------------------------------------------ #

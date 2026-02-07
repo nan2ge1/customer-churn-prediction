@@ -10,11 +10,10 @@ from sklearn.pipeline import Pipeline
 from churn_prediction.evaluation import (
     _get_feature_names,
     evaluate_model,
-    plot_correlation_matrix,
     plot_feature_importance,
     train_model,
 )
-from churn_prediction.config import CATEGORICAL_FEATURES, NUMERICAL_FEATURES, TARGET
+from churn_prediction.config import NUMERICAL_FEATURES
 from churn_prediction.models import create_rf_pipeline
 
 
@@ -39,11 +38,6 @@ def test_evaluate_model_runs(sample_Xy):
     pipeline, X, y = _fitted_pipeline(sample_Xy)
     # Should not raise
     evaluate_model(pipeline, X, y, "TestModel")
-
-
-def test_plot_correlation_matrix_runs(sample_df):
-    df = sample_df.drop(columns=["CustomerID"])
-    plot_correlation_matrix(df)
 
 
 def test_get_feature_names(sample_Xy):

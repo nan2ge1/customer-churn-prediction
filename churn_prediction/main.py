@@ -9,11 +9,10 @@ import joblib
 
 logger = logging.getLogger(__name__)
 
-from churn_prediction.config import ID_COL, MODEL_DIR, MODEL_FILENAME
+from churn_prediction.config import MODEL_DIR, MODEL_FILENAME
 from churn_prediction.data import load_data, explore, prepare_features
 from churn_prediction.models import create_rf_pipeline, create_xgb_pipeline
 from churn_prediction.evaluation import (
-    plot_correlation_matrix,
     cross_validate_models,
     train_model,
     plot_feature_importance,
@@ -30,7 +29,6 @@ def main() -> None:
 
     # ── Step 2: Feature engineering ───────────────────────────────────────
     X, y = prepare_features(df)
-    plot_correlation_matrix(df.drop(columns=[ID_COL]))
 
     # ── Step 3: Build model pipelines ─────────────────────────────────────
     rf_pipeline = create_rf_pipeline()

@@ -40,6 +40,9 @@ Thumbs.db
 models/*.joblib
 models/*.pkl
 
+# EDA figures
+figures/
+
 # Claude
 .claudeignore
 CLAUDE.md
@@ -47,3 +50,4 @@ TASKS.md
 
 # Azure
 .azure/
+AZURE.md
